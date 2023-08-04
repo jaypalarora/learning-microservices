@@ -35,4 +35,10 @@ public class UsersController {
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
         return ResponseEntity.ok(userService.save(userDTO));
     }
+/*
+    @PostMapping
+    public ResponseEntity<String> login(@Valid @RequestBody LoginDTO loginDTO) {
+        var token = userService.login(loginDTO);
+        return ResponseEntity.ok(token);
+    }*/
 }
