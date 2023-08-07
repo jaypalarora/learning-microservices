@@ -11,11 +11,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 
 @Configuration
 @EnableWebSecurity
@@ -23,21 +20,27 @@ public class WebSecurity {
 
     private Environment environment;
     private UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
-    public WebSecurity(final Environment environment, final UserService userService) {
+    public WebSecurity(final Environment environment, final UserService userService, final PasswordEncoder passwordEncoder) {
         this.environment = environment;
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable());
 
-        http.authorizeHttpRequests(ahr -> {
-                ahr.requestMatchers(HttpMethod.POST, "/users")
-                    .access(new WebExpressionAuthorizationManager("hasIpAddress(%s)".formatted(environment.getProperty("gateway.ip"))));
-            })
-            .addFilter(new AuthenticationFilter(authenticationManager(http), userService, environment))
+        var authManager = authenticationManager(http);
+
+        http
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(ahr ->
+                ahr.requestMatchers(HttpMethod.POST, "/users").permitAll()
+                    /*.access(new WebExpressionAuthorizationManager("hasIpAddress(%s)".formatted(environment.getProperty("gateway.ip"))))*/
+            )
+            .addFilter(new AuthenticationFilter(authManager, userService, environment))
+            .authenticationManager(authManager)
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
@@ -45,16 +48,9 @@ public class WebSecurity {
 
     private AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         final var authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userDetailsService());
+        authenticationManagerBuilder
+            .userDetailsService(userService)
+            .passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
-    }
-
-    private UserDetailsService userDetailsService() {
-        return userService;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }

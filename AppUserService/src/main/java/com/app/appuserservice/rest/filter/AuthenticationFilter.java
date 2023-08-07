@@ -1,11 +1,14 @@
 package com.app.appuserservice.rest.filter;
 
+import com.app.appuserservice.dto.LoginDTO;
 import com.app.appuserservice.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +25,8 @@ import java.util.Date;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
     private UserService userService;
     private Environment environment;
 
@@ -31,13 +36,15 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         this.environment = environment;
     }
 
+    @SneakyThrows
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
         throws AuthenticationException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        final var loginDTO = MAPPER.readValue(request.getInputStream(), LoginDTO.class);
+//        String username = request.getParameter("username");
+//        String password = request.getParameter("password");
         //TODO add validation for username and password?
-        return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
     }
 
     @Override

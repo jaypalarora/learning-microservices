@@ -13,10 +13,10 @@ spring:
         restart:
             enabled: true
     datasource:
-        url: jdbc:postgresql://localhost:5432/users-ms
+        url: jdbc:postgresql://localhost:5432/users_ms
         username: postgres
 token:
     expiration: 3600 #seconds
-    secret: !QAZxsw2
+    secret: locizFuaIgeehRNmRlhlyEerAcGtlNCEtNLSQGIiueBcekFKBolMzkgMDSnzrJpzdxBUctwcDAjMsswWrboXnSDyinGZFsbwUCkvOJqRFtCJiXrtrEOnDqZnbidcIYKsVlpmQlLPuvNLacZtxZLfbgKNbpJzGfFTHbWdbkZPKdwYiubMyinsnPQoOVPLJYSWpIVMNQTroYbBDHFayUagnqOHZkSejSuAsqbAmxgXJWFIlXhnZDQrqNGlXCkHUAyE
 #gateway:
-#    ip:
+#    ip: "192.168.5.88"
