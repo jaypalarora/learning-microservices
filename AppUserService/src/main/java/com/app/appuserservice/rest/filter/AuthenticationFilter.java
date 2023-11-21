@@ -41,8 +41,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
         throws AuthenticationException {
         final var loginDTO = MAPPER.readValue(request.getInputStream(), LoginDTO.class);
-//        String username = request.getParameter("username");
-//        String password = request.getParameter("password");
         //TODO add validation for username and password?
         return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
     }

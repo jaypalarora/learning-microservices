@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -21,6 +22,7 @@ import java.util.Objects;
 @ToString
 public class UserEntity implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -41,8 +43,7 @@ public class UserEntity implements Serializable {
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
-        if (!(o instanceof UserEntity)) return false;
-        final UserEntity that = (UserEntity) o;
+        if (!(o instanceof final UserEntity that)) return false;
         return email.equals(that.email);
     }
 

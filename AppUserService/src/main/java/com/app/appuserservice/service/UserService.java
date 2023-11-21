@@ -51,4 +51,8 @@ public class UserService implements UserDetailsService {
     public UserDTO findByEmail(final String email) {
         return userMapper.toDto(userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email)));
     }
+
+    public UserDTO findByUserId(final String userId) {
+        return userMapper.toDto(userRepository.findByUserId(userId).orElseThrow(() -> new UsernameNotFoundException(userId)));
+    }
 }

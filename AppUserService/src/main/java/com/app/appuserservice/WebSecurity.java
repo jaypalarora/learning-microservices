@@ -37,6 +37,9 @@ public class WebSecurity {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(ahr ->
                 ahr.requestMatchers(HttpMethod.POST, "/users").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/users/status").permitAll()
+                    .requestMatchers(HttpMethod.GET, HttpMethod.DELETE, HttpMethod.PUT, "/users**").permitAll()
+                //below allows access to the /users endpoint only from the api gateway IP address.
                     /*.access(new WebExpressionAuthorizationManager("hasIpAddress(%s)".formatted(environment.getProperty("gateway.ip"))))*/
             )
             .addFilter(new AuthenticationFilter(authManager, userService, environment))
