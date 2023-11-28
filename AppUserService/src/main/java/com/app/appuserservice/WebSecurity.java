@@ -33,6 +33,9 @@ public class WebSecurity {
 
         var authManager = authenticationManager(http);
 
+        final var authenticationFilter = new AuthenticationFilter(authManager, userService, environment);
+        authenticationFilter.setFilterProcessesUrl(environment.getProperty("login.url.path"));
+
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(ahr ->
@@ -42,7 +45,7 @@ public class WebSecurity {
                 //below allows access to the /users endpoint only from the api gateway IP address.
                     /*.access(new WebExpressionAuthorizationManager("hasIpAddress(%s)".formatted(environment.getProperty("gateway.ip"))))*/
             )
-            .addFilter(new AuthenticationFilter(authManager, userService, environment))
+            .addFilter(authenticationFilter)
             .authenticationManager(authManager)
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
