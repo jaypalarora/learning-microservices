@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import reactor.core.publisher.Mono;
 
 /**
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
 @Configuration
 public class GlobalFiltersConfiguration {
 
+    @Order(1)
     @Bean
     public GlobalFilter secondCustomPrePostFilter() {
         return (exchange, chain) -> {
@@ -24,6 +26,7 @@ public class GlobalFiltersConfiguration {
         };
     }
 
+    @Order(2)
     @Bean
     public GlobalFilter thirdCustomPrePostFilter() {
         return (exchange, chain) -> {
