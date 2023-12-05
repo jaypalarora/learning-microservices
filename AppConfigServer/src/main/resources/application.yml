@@ -9,7 +9,6 @@ spring:
         git:
           uri: https://github.com/jaypalarora/app-config.git
           username: jaypalarora
-          password: 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
-          clone-on-start: true
-          search-paths: config
-          default-label: master
+          password: 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 #PAT used valid till 29.11.2024
+          clone-on-start: true #clones the repo on startup
+          default-label: master #default branch
