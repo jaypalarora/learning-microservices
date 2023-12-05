@@ -9,6 +9,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +24,7 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 
+@Slf4j
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -64,7 +66,9 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     private Date getExpiration(final Instant now) {
-        return Date.from(now.plusSeconds(environment.getProperty("token.expiration", Integer.class)));
+        final var tokenExpiryTime = environment.getProperty("token.expiration", Integer.class);
+        log.info("Token Expiration Time: {}", tokenExpiryTime);
+        return Date.from(now.plusSeconds(tokenExpiryTime));
     }
 
     private SecretKey getSecretKey() {
