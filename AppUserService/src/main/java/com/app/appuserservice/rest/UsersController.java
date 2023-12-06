@@ -30,7 +30,10 @@ public class UsersController {
 
     @GetMapping("/status")
     public ResponseEntity<Map<String, String>> status() {
-        return ResponseEntity.ok(Map.of("app-name", "users-ms on port: " + env.getProperty("local.server.port")));
+        final var tokenSecret = env.getProperty("token.secret");
+        return ResponseEntity.ok(Map.of(
+            "app-name", "users-ms on port: %s".formatted(env.getProperty("local.server.port")),
+            "token-secret", tokenSecret));
     }
 
     @PostMapping
