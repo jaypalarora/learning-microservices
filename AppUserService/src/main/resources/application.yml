@@ -17,6 +17,11 @@ spring:
         username: postgres
     config:
         import: optional:configserver:http://localhost:8012 #on adding this property bootstrap.properties is not required. This is loaded at startup before any of the beans are created.
+    rabbitmq:
+        host: localhost
+        port: 5672
+        username: guest
+        password: guest
 token:
     expiration: 3600 #seconds
     secret: locizFuaIgeehRNmRlhlyEerAcGtlNCEtNLSQGIiueBcekFKBolMzkgMDSnzrJpzdxBUctwcDAjMsswWrboXnSDyinGZFsbwUCkvOJqRFtCJiXrtrEOnDqZnbidcIYKsVlpmQlLPuvNLacZtxZLfbgKNbpJzGfFTHbWdbkZPKdwYiubMyinsnPQoOVPLJYSWpIVMNQTroYbBDHFayUagnqOHZkSejSuAsqbAmxgXJWFIlXhnZDQrqNGlXCkHUAyE

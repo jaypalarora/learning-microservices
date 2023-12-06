@@ -73,6 +73,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private SecretKey getSecretKey() {
         var secret = environment.getProperty("token.secret");
+        log.info("Token Secret: {}", secret);
         byte[] secretBytes = Base64.getEncoder().encode(secret.getBytes());
         return new SecretKeySpec(secretBytes, SignatureAlgorithm.HS512.getJcaName());
     }
