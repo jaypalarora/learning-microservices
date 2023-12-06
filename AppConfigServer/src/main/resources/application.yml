@@ -12,3 +12,13 @@ spring:
           password: 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 #PAT used valid till 29.11.2024
           clone-on-start: true #clones the repo on startup
           default-label: master #default branch
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+management:
+  endpoints:
+    web:
+      exposure:
+        include: busrefresh
