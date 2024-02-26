@@ -78,7 +78,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     private Mono<Void> onError(final ServerWebExchange exchange, final String errMsg, final HttpStatus httpStatus) {
         final var response = exchange.getResponse();
         response.setStatusCode(httpStatus);
-
+        response.writeWith(Mono.fromRunnable(() -> Mono.just(errMsg)));
         return response.setComplete();
     }
 
