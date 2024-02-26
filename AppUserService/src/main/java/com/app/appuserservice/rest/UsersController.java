@@ -1,5 +1,6 @@
 package com.app.appuserservice.rest;
 
+import com.app.appuserservice.dto.UserAlbumDTO;
 import com.app.appuserservice.dto.UserDTO;
 import com.app.appuserservice.service.UserService;
 import jakarta.validation.Valid;
@@ -42,7 +43,7 @@ public class UsersController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDTO> getUsers(@NotBlank @PathVariable("userId")String userId) {
+    public ResponseEntity<UserAlbumDTO> getUsers(@NotBlank @PathVariable("userId")String userId) {
         return ResponseEntity.ok(userService.findByUserId(userId));
     }
 /*

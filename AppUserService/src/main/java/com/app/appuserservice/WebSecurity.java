@@ -3,6 +3,7 @@ package com.app.appuserservice;
 import com.app.appuserservice.rest.filter.AuthenticationFilter;
 import com.app.appuserservice.service.UserService;
 import jakarta.ws.rs.HttpMethod;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -13,7 +14,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 public class WebSecurity {
@@ -34,12 +37,18 @@ public class WebSecurity {
         var authManager = authenticationManager(http);
 
         final var authenticationFilter = new AuthenticationFilter(authManager, userService, environment);
-        authenticationFilter.setFilterProcessesUrl(environment.getProperty("login.url.path"));
+        final var loginUrl = environment.getProperty("login.url.path");
+        log.info("Login URL: {}", loginUrl);
+        authenticationFilter.setFilterProcessesUrl(loginUrl);
+
+        var gatewayIp = environment.getProperty("gateway.ip");
+        log.info("Gateway IP: {}", gatewayIp);
 
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(ahr ->
-                ahr.requestMatchers(HttpMethod.POST, "/users").permitAll()
+                ahr.requestMatchers(HttpMethod.POST, "/users")
+                        .access(new WebExpressionAuthorizationManager("hasIpAddress('" + gatewayIp + "')"))
                     .requestMatchers(HttpMethod.GET, "/users/status").permitAll()
                     .requestMatchers(HttpMethod.GET, HttpMethod.DELETE, HttpMethod.PUT, "/users**").permitAll()
                 //below allows access to the /users endpoint only from the api gateway IP address.
@@ -48,7 +57,6 @@ public class WebSecurity {
             .addFilter(authenticationFilter)
             .authenticationManager(authManager)
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
         return http.build();
     }
 

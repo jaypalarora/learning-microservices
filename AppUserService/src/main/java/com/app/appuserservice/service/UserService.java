@@ -1,15 +1,21 @@
 package com.app.appuserservice.service;
 
+import com.app.appuserservice.dto.AlbumDTO;
+import com.app.appuserservice.dto.UserAlbumDTO;
 import com.app.appuserservice.dto.UserDTO;
 import com.app.appuserservice.repository.UserRepository;
 import com.app.appuserservice.shared.mapper.UserMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,14 +25,19 @@ import java.util.UUID;
 public class UserService implements UserDetailsService {
 
 
+    @Value("${service-urls.album}")
+    private String albumServiceUrl;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
-    public UserService(final UserRepository userRepository, final PasswordEncoder passwordEncoder, final UserMapper userMapper) {
+    private RestTemplate restTemplate;
+
+    public UserService(final UserRepository userRepository, final PasswordEncoder passwordEncoder, final UserMapper userMapper, RestTemplate restTemplate) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
+        this.restTemplate = restTemplate;
     }
 
     public UserDTO save(UserDTO userDTO) {
@@ -52,7 +63,12 @@ public class UserService implements UserDetailsService {
         return userMapper.toDto(userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email)));
     }
 
-    public UserDTO findByUserId(final String userId) {
-        return userMapper.toDto(userRepository.findByUserId(userId).orElseThrow(() -> new UsernameNotFoundException(userId)));
+    public UserAlbumDTO findByUserId(final String userId) {
+        final var userDTO = userMapper.toDto(userRepository.findByUserId(userId).orElseThrow(() -> new UsernameNotFoundException(userId)));
+
+        var albumUrl = albumServiceUrl.formatted(userDTO.getUserId());
+        final List<AlbumDTO> albumDTOs = restTemplate.exchange(albumUrl, HttpMethod.GET, null, new ParameterizedTypeReference<List<AlbumDTO>>() {}).getBody();
+
+        return new UserAlbumDTO(userDTO, albumDTOs);
     }
 }
