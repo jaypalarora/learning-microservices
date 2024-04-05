@@ -22,11 +22,17 @@ spring:
     port: 5672
     username: guest
     password: guest
+logging:
+  level:
+    root: INFO
+    com.app.appuserservice.service.AlbumMsRestClient: DEBUG
+  file: users-ms.log
 token:
   expiration: 3600 #seconds
   secret: locizFuaIgeehRNmRlhlyEerAcGtlNCEtNLSQGIiueBcekFKBolMzkgMDSnzrJpzdxBUctwcDAjMsswWrboXnSDyinGZFsbwUCkvOJqRFtCJiXrtrEOnDqZnbidcIYKsVlpmQlLPuvNLacZtxZLfbgKNbpJzGfFTHbWdbkZPKdwYiubMyinsnPQoOVPLJYSWpIVMNQTroYbBDHFayUagnqOHZkSejSuAsqbAmxgXJWFIlXhnZDQrqNGlXCkHUAyE
 gateway:
-  ip: "127.0.0.1"
+  ip: "192.168.5.88"
+#  Update the above IP for the machine hosting gateway. Use command `hostname -I` on linux.
 login:
   url:
     path: /users/login

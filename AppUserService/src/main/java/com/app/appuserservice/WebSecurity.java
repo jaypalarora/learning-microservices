@@ -11,10 +11,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 @Slf4j
 @Configuration
@@ -44,19 +46,21 @@ public class WebSecurity {
         var gatewayIp = environment.getProperty("gateway.ip");
         log.info("Gateway IP: {}", gatewayIp);
 
+        final var hasIpAddExp = "hasIpAddress('" + gatewayIp + "')";
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(ahr ->
                 ahr.requestMatchers(HttpMethod.POST, "/users")
                         .access(new WebExpressionAuthorizationManager("hasIpAddress('" + gatewayIp + "')"))
                     .requestMatchers(HttpMethod.GET, "/users/status").permitAll()
-                    .requestMatchers(HttpMethod.GET, HttpMethod.DELETE, HttpMethod.PUT, "/users**").permitAll()
+                    .requestMatchers(HttpMethod.GET, HttpMethod.DELETE, HttpMethod.PUT, "/users/**").permitAll()
                 //below allows access to the /users endpoint only from the api gateway IP address.
-                    /*.access(new WebExpressionAuthorizationManager("hasIpAddress(%s)".formatted(environment.getProperty("gateway.ip"))))*/
+//                    .access(new WebExpressionAuthorizationManager("hasIpAddress('" + gatewayIp + "')"))
             )
             .addFilter(authenticationFilter)
             .authenticationManager(authManager)
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         return http.build();
     }
 
@@ -67,4 +71,11 @@ public class WebSecurity {
             .passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
     }
+
+    /*@Bean
+    WebSecurityCustomizer allowedHostnames() {
+        StrictHttpFirewall shf = new StrictHttpFirewall();
+        shf.setAllowedHostnames(hostnames -> hostnames.contains("localhost"));
+        return (web) -> web.httpFirewall(shf);
+    }*/
 }

@@ -1,10 +1,12 @@
 package com.app.appuserservice.rest;
 
+import com.app.appuserservice.dto.LoginDTO;
 import com.app.appuserservice.dto.UserAlbumDTO;
 import com.app.appuserservice.dto.UserDTO;
 import com.app.appuserservice.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UsersController {
@@ -31,6 +34,7 @@ public class UsersController {
 
     @GetMapping("/status")
     public ResponseEntity<Map<String, String>> status() {
+        log.info("Getting status");
         final var tokenSecret = env.getProperty("token.secret");
         return ResponseEntity.ok(Map.of(
             "app-name", "users-ms on port: %s".formatted(env.getProperty("local.server.port")),
@@ -44,12 +48,13 @@ public class UsersController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserAlbumDTO> getUsers(@NotBlank @PathVariable("userId")String userId) {
+        log.info("Request to get user by id- {}", userId);
         return ResponseEntity.ok(userService.findByUserId(userId));
     }
-/*
-    @PostMapping
-    public ResponseEntity<String> login(@Valid @RequestBody LoginDTO loginDTO) {
-        var token = userService.login(loginDTO);
-        return ResponseEntity.ok(token);
-    }*/
+
+    @GetMapping("/{userId}/albums")
+    public ResponseEntity<UserAlbumDTO> userAlbums(@PathVariable("userId") String userId) {
+        var userAlbums = userService.findByUserId(userId);
+        return ResponseEntity.ok(userAlbums);
+    }
 }

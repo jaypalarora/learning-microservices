@@ -31,13 +31,16 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
-    private RestTemplate restTemplate;
+    AlbumMsRestClient albumMsRestClient;
 
-    public UserService(final UserRepository userRepository, final PasswordEncoder passwordEncoder, final UserMapper userMapper, RestTemplate restTemplate) {
+//    private RestTemplate restTemplate;
+
+    public UserService(final UserRepository userRepository, final PasswordEncoder passwordEncoder, final UserMapper userMapper, AlbumMsRestClient albumMsRestClient) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
-        this.restTemplate = restTemplate;
+//        this.restTemplate = restTemplate;
+        this.albumMsRestClient = albumMsRestClient;
     }
 
     public UserDTO save(UserDTO userDTO) {
@@ -67,7 +70,9 @@ public class UserService implements UserDetailsService {
         final var userDTO = userMapper.toDto(userRepository.findByUserId(userId).orElseThrow(() -> new UsernameNotFoundException(userId)));
 
         var albumUrl = albumServiceUrl.formatted(userDTO.getUserId());
-        final List<AlbumDTO> albumDTOs = restTemplate.exchange(albumUrl, HttpMethod.GET, null, new ParameterizedTypeReference<List<AlbumDTO>>() {}).getBody();
+        log.info("User album url: {}", albumUrl);
+//        final List<AlbumDTO> albumDTOs = restTemplate.exchange(albumUrl, HttpMethod.GET, null, new ParameterizedTypeReference<List<AlbumDTO>>() {}).getBody();
+        final List<AlbumDTO> albumDTOs = albumMsRestClient.getAlbums(userDTO.getUserId());
 
         return new UserAlbumDTO(userDTO, albumDTOs);
     }
