@@ -46,7 +46,6 @@ public class WebSecurity {
         var gatewayIp = environment.getProperty("gateway.ip");
         log.info("Gateway IP: {}", gatewayIp);
 
-        final var hasIpAddExp = "hasIpAddress('" + gatewayIp + "')";
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(ahr ->
@@ -54,6 +53,8 @@ public class WebSecurity {
                         .access(new WebExpressionAuthorizationManager("hasIpAddress('" + gatewayIp + "')"))
                     .requestMatchers(HttpMethod.GET, "/users/status").permitAll()
                     .requestMatchers(HttpMethod.GET, HttpMethod.DELETE, HttpMethod.PUT, "/users/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/actuator/circuitbreakerevents").permitAll()
                 //below allows access to the /users endpoint only from the api gateway IP address.
 //                    .access(new WebExpressionAuthorizationManager("hasIpAddress('" + gatewayIp + "')"))
             )

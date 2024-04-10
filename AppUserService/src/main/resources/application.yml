@@ -38,3 +38,25 @@ login:
     path: /users/login
 service-urls:
   album: "http://albums-ms/users/%s/albums"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: mappings,bus-refresh,bus-env,health,circuitbreakerevents
+  endpoint:
+    health:
+      show-details: ALWAYS
+  health:
+    circuitbreakers:
+      enabled: true
+resilience4j:
+  circuitbreaker:
+    instances:
+      albums-ms:
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        slidingWindowSize: 2
+        slidingWindowType: COUNT_BASED
+        failureRateThresholdPercentage: 50
+        minimumNumberOfCalls: 1
+        eventConsumerBufferSize: 10
