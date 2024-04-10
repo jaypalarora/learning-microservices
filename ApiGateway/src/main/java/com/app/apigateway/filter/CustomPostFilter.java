@@ -17,7 +17,7 @@ public class CustomPostFilter implements GlobalFilter, Ordered {
         return chain.filter(exchange)
             //Post execution of filter chain executes this post filter in then().
             .then(Mono.fromRunnable(() -> {
-                log.info("Last custom post filter executed");
+                log.debug("Last custom post filter executed");
             }));
     }
 

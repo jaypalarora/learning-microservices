@@ -40,14 +40,14 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     }
 
     public static class Config {
-        //todo add configs here...
+        //Add config properties here
     }
 
     @Override
     public GatewayFilter apply(final Config config) {
         //exchange has http request, auth header etc.
         //chain is to delegate it to the subsequent filters.
-        log.debug("Applying AuthorizationHeaderFilter");
+        log.info("Applying AuthorizationHeaderFilter");
         return (exchange, chain) -> {
             final var request = exchange.getRequest();
             final var headers = request.getHeaders();
@@ -56,13 +56,13 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
             }
 
             final var authHeader = headers.getFirst(AUTHORIZATION);
-            log.debug("Authorization header: {}", authHeader);
+            log.info("Authorization header: {}", authHeader);
             if(!authHeader.startsWith(BEARER_)) {
                 return onError(exchange, INVALID_AUTH_HEADER_ERR_MSG, UNAUTHORIZED);
             }
 
             final var token = authHeader.substring(BEARER_.length());
-            log.debug("Token: {}", token);
+            log.info("JWT token in request header: {}", token);
             if(token.isBlank()) {
                 return onError(exchange, INVALID_AUTH_HEADER_ERR_MSG, UNAUTHORIZED);
             }
@@ -84,7 +84,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
 
     private boolean isJwtTokenValid(final String token) {
         final var secret = environment.getProperty("token.secret", String.class);
-        log.debug("Token secret: {}", secret);
+        log.info("JWT Token secret: {}", secret);
         final var secretBytes = Base64.getEncoder().encode(secret.getBytes());
         final var signingKey = new SecretKeySpec(secretBytes, SignatureAlgorithm.HS512.getJcaName());
 
@@ -101,6 +101,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
         }
 
         final var subject = parsedToken.getBody().getSubject();
+        log.info("Parse JWT Token subject: {}", subject);
         return StringUtils.isNotBlank(subject);
     }
 }

@@ -20,11 +20,13 @@ public class CustomPreFilter implements GlobalFilter, Ordered {
         final var path = request.getPath().toString();
         log.info("Request path = {}", path);
 
+        StringBuilder headersKeyValues = new StringBuilder(128);
         request.getHeaders()
             .forEach((key, value) -> {
-                log.info("Request header: {} = {}", key, value);
+                headersKeyValues.append("%s = %s\n".formatted(key, value));
             });
 
+        log.info("Request Headers:\n{}", headersKeyValues);
         return chain.filter(exchange);
     }
 

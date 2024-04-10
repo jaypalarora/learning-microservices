@@ -18,10 +18,10 @@ public class GlobalFiltersConfiguration {
     @Bean
     public GlobalFilter secondCustomPrePostFilter() {
         return (exchange, chain) -> {
-            log.info("2nd custom pre filter executed");
+            log.debug("2nd custom pre filter executed");
             return chain.filter(exchange)
                 .then(Mono.fromRunnable(() -> {
-                log.info("2nd custom post filter executed");
+                log.debug("2nd custom post filter executed");
             }));
         };
     }
@@ -30,10 +30,10 @@ public class GlobalFiltersConfiguration {
     @Bean
     public GlobalFilter thirdCustomPrePostFilter() {
         return (exchange, chain) -> {
-            log.info("3rd custom pre filter executed");
+            log.debug("3rd custom pre filter executed");
             return chain.filter(exchange)
                 .then(Mono.fromRunnable(() -> {
-                    log.info("3rd custom post filter executed");
+                    log.debug("3rd custom post filter executed");
                 }));
         };
     }
