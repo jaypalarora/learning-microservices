@@ -51,6 +51,7 @@ management:
       enabled: true
 resilience4j:
   circuitbreaker:
+    circuitBreakerAspectOrder: 1
     instances:
       albums-ms:
         automaticTransitionFromOpenToHalfOpenEnabled: true
@@ -60,3 +61,13 @@ resilience4j:
         failureRateThresholdPercentage: 50
         minimumNumberOfCalls: 1
         eventConsumerBufferSize: 10
+  retry:
+    #Higher value of aspect order mean higher priority. This will execute @Retry before @CircuitBreaker
+    retryAspectOrder: 2
+    instances:
+      albums-ms:
+        waitDuration: 5s
+        maxAttempts: 2
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+        exponentialBackoffInitialInterval: 5000
