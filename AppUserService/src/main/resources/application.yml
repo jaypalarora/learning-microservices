@@ -26,7 +26,10 @@ logging:
   level:
     root: INFO
     com.app.appuserservice.service.AlbumMsRestClient: DEBUG
+    com.app.appuserservice.service.UserService: DEBUG
   file: users-ms.log
+  pattern:
+    level: "%5p [${spring.application.name}, %X{traceId:-}, %X{spanId:-}]"
 token:
   expiration: 3600 #seconds
   secret: locizFuaIgeehRNmRlhlyEerAcGtlNCEtNLSQGIiueBcekFKBolMzkgMDSnzrJpzdxBUctwcDAjMsswWrboXnSDyinGZFsbwUCkvOJqRFtCJiXrtrEOnDqZnbidcIYKsVlpmQlLPuvNLacZtxZLfbgKNbpJzGfFTHbWdbkZPKdwYiubMyinsnPQoOVPLJYSWpIVMNQTroYbBDHFayUagnqOHZkSejSuAsqbAmxgXJWFIlXhnZDQrqNGlXCkHUAyE
@@ -49,6 +52,10 @@ management:
   health:
     circuitbreakers:
       enabled: true
+  tracing:
+    sampling:
+      #      Used by micrometer for tracing request. Default tracing is 10% (0.1). Full tracing is 1.
+      probability: 1.0
 resilience4j:
   circuitbreaker:
     circuitBreakerAspectOrder: 1

@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -70,9 +71,10 @@ public class UserService implements UserDetailsService {
         final var userDTO = userMapper.toDto(userRepository.findByUserId(userId).orElseThrow(() -> new UsernameNotFoundException(userId)));
 
         var albumUrl = albumServiceUrl.formatted(userDTO.getUserId());
-        log.info("User album url: {}", albumUrl);
+        log.debug("User album url: {}", albumUrl);
 //        final List<AlbumDTO> albumDTOs = restTemplate.exchange(albumUrl, HttpMethod.GET, null, new ParameterizedTypeReference<List<AlbumDTO>>() {}).getBody();
         final List<AlbumDTO> albumDTOs = albumMsRestClient.getAlbums(userDTO.getUserId());
+        log.debug("Found Albums for userId: {}, albumCount: {}", userId, albumDTOs.size());
 
         return new UserAlbumDTO(userDTO, albumDTOs);
     }
