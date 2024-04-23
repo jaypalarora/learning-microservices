@@ -5,7 +5,8 @@ eureka:
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 logging:
-  file: albums-ms.log
+  file:
+    name: albums-ms.log
   level:
     root: info
   pattern:

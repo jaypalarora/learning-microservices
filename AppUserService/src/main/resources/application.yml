@@ -27,7 +27,8 @@ logging:
     root: INFO
     com.app.appuserservice.service.AlbumMsRestClient: DEBUG
     com.app.appuserservice.service.UserService: DEBUG
-  file: users-ms.log
+  file:
+    name: users-ms.log
   pattern:
     level: "%5p [${spring.application.name}, %X{traceId:-}, %X{spanId:-}]"
 token:

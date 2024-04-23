@@ -35,6 +35,8 @@ public class AppUserServiceApplication {
     @LoadBalanced
     @Bean
     public RestTemplate restTemplate() {
+        //public RestTemplate restTemplate(RestTemplateBuilder rtb) {
+        //To use Zipkin tracing use RestTemplateBuilder.build() for tracing request made with RestTemplate.
         return new RestTemplate();
     }
 
